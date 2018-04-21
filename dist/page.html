@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  	<meta name="robots" content="noindex, nofollow">
+  	<meta name="googlebot" content="noindex, nofollow">
+  	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://www.numericjs.com/lib/numeric-1.2.6.min.js"></script>
+	<link href="css/page.css" rel="stylesheet">
+  	<title>设置点</title>
+</head>
+<body>
+  <p>
+    Drag points around to distort image.
+    <input id="drawSkeleton" type="checkbox" checked>
+    <label for="drawSkeleton">Draw wireframe and control points.</label>
+</p>
+<div class="imgparentbox">
+    <div id="container">
+        <img id="background" src="img/bj.png">
+        <img id="screen" src="img/phone.jpg">
+        <canvas id="canvasElement"></canvas>
+        <svg id="svgElement"></svg>
+    </div>
+    <div class="imgyulan"></div>
+</div>
+<div class="pointbox">
+    左上：<input class="inputele" id="id0" type="text" disabled>
+    右上：<input class="inputele" id="id1" type="text" disabled>
+    右下：<input class="inputele" id="id2" type="text" disabled>
+    左下：<input class="inputele" id="id3" type="text" disabled>
+  </div>
+<button id="hecheng" type="button">合成图片</button>
+<button id="dowmimg" type="button">下载图片</button>
+<button id="upload" type="button">上传图片</button>
+
+<script src="js/page.js"></script>
+  <script>
+  // tell the embed parent frame the height of the content
+  if (window.parent && window.parent.parent){
+    window.parent.parent.postMessage(["resultsFrame", {
+      height: document.body.getBoundingClientRect().height,
+      slug: "CJy24"
+    }], "*")
+  }
+</script>
+
+</body>
+
+</html>
+

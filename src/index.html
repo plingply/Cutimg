@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>DrawImage</title>
+	<link href="css/index.css" rel="stylesheet">
+</head>
+<body>
+	<!-- 主操作区 -->
+	<div class="imgbox">
+		<div class="left">
+			<div class="box">
+				<img id="caijianimg" src="img/test.jpg" alt>
+				<div class="catbox">
+					<div class="model model1"></div>
+					<div class="model model2"></div>
+					<div class="model model3"></div>
+					<div class="model model4"></div>
+
+					<div class="point point1"></div>
+					<div class="point point2"></div>
+					<div class="point point3"></div>
+					<div class="point point4"></div>
+					<div class="point point5"></div>
+					<div class="point point6"></div>
+					<div class="point point7"></div>
+					<div class="point point8"></div>
+				</div>
+			</div>
+		</div>
+		<div class="right">
+			<div id="yulanbox"></div>
+		</div>
+	</div>
+	<!-- 下载按钮 -->
+	<div class="btnbox">
+		<span id="caijian">裁剪</span>
+		<span id="upload">上传</span>
+		<span id="download">下载</span>
+	</div>
+	<!-- 裁剪框输入区 -->
+	<div class="cjbox">
+		宽<input id="width_input" type="number">
+		高<input id="height_input" type="number">
+	</div>
+	<script>
+		var isClick = false // 控制裁剪框移动
+		var isclick1 = false //控制裁剪框大小
+		//设置剪裁框的位置 以及遮罩层大小定位
+		function setCatboxposition(){
+			var box = document.querySelector('.box')
+			var carbox = document.querySelector('.catbox')
+			var bh = box.clientHeight
+			var bw = box.clientWidth
+			var ch = carbox.clientHeight
+			var cw = carbox.clientWidth
+			var left = (bw - cw)/2 < 0?0:(bw - cw)/2
+			var top = (bh - ch)/2<0?0:(bh - ch)/2
+			carbox.style.top = top + 'px'
+			carbox.style.left = left + 'px'
+			
+			//设置遮罩层的大小
+			var model = document.querySelectorAll('.model')
+			model.forEach(function(item){
+				item.style.height = bh + 'px'
+				if(item.className.indexOf('model1') != -1){
+					item.style.width = bw + 'px'
+					item.style.height = bh*3 + 'px'
+					item.style.left = -1 * bw + 'px'
+					item.style.top = -1 * (bh*3 - ch)/2 + 'px'
+				}
+				if(item.className.indexOf('model2') != -1){
+					item.style.width = '100%'
+					item.style.left = '0px'
+					item.style.top = -1 * bh + 'px'
+				}
+				if(item.className.indexOf('model3') != -1){
+					item.style.width = bw + 'px'
+					item.style.height = bh*3 + 'px'
+					item.style.left = '100%'
+					item.style.top = -1 * (bh*3 - ch)/2 + 'px'
+				}
+				if(item.className.indexOf('model4') != -1){
+					item.style.left ='0'
+					item.style.width = '100%'
+					item.style.top = '100%'
+				}
+			})
+
+			carbox.style.opacity = 1
+		}
+
+		//设置父容器高度
+		function setparentboxheight(){
+			var imgbox = document.querySelector('.imgbox')
+			var height = document.documentElement.clientHeight
+			imgbox.style.height = height - 50 + 'px'
+			imgbox.style.opacity = 1
+		}
+		// 剪裁框移动
+		function carboxmove(){
+			var carbox = document.querySelector('.catbox')
+			var oldx = 0;
+			var oldy = 0;
+			var point_className
+			carbox.onmousedown = function(e){
+				point_className = e.target.className
+				// 移动裁剪框
+				if(e.target.className == 'catbox'){
+					isClick = true
+					oldx = e.clientX
+					oldy = e.clientY
+					console.log('move')
+				}
+				if(e.target.className.indexOf('point') != -1){
+					console.log('point')
+					oldx = e.clientX
+					oldy = e.clientY
+					isclick1 = true
+				}
+			}
+			carbox.onmouseup = function(e){
+				isClick = false
+				isclick1 = false
+			}
+			carbox.onmousemove = function(e){
+				// 裁剪框移动
+				if(isClick){
+					var x = e.clientX
+					var y = e.clientY
+					var left = x - oldx
+					var top = y - oldy
+					
+					var oldleft = parseFloat(carbox.style.left)
+					var oldtop = parseFloat(carbox.style.top)
+
+					carbox.style.left = oldleft + left + 'px'
+					carbox.style.top = oldtop + top + 'px'
+					oldx = x
+					oldy = y
+				}
+				//裁剪框改变大小
+				if(isclick1){
+					var x = e.clientX
+					var y = e.clientY
+					var w = x - oldx
+					var h = y - oldy
+					var width = carbox.clientWidth
+					var height = carbox.clientHeight
+					var left = parseFloat(carbox.style.left)
+					var top = parseFloat(carbox.style.top)
+					// 左上
+					if(point_className.indexOf('point1') != -1){
+						carbox.style.width = width + (oldx -x) + 'px'
+						carbox.style.height = height + (oldx -x) + 'px'
+						carbox.style.left = left - (oldx -x) + 'px'
+						carbox.style.top = top - (oldx -x) + 'px'
+						oldx = x
+						oldy = y
+					}
+					// 上
+					if(point_className.indexOf('point2') != -1){
+						carbox.style.height = height + (oldy -y) + 'px'
+						carbox.style.top = top - (oldy -y) + 'px'
+						oldy = y
+					}
+					// 右上
+					if(point_className.indexOf('point3') != -1){
+						carbox.style.width = width - (oldx -x) + 'px'
+						carbox.style.height = height - (oldx -x) + 'px'
+						carbox.style.top = top + (oldx -x) + 'px'
+						oldx = x
+					}
+					// 右
+					if(point_className.indexOf('point4') != -1){
+						carbox.style.width = width - (oldx -x) + 'px'
+						oldx = x
+					}
+					// 右下
+					if(point_className.indexOf('point5') != -1){
+						carbox.style.width = width - (oldx -x) + 'px'
+						carbox.style.height = height - (oldx -x) + 'px'
+						oldx = x
+					}
+					// 下
+					if(point_className.indexOf('point6') != -1){
+						carbox.style.height = height - (oldy -y) + 'px'
+						oldy = y
+					}
+
+					// 左上
+					if(point_className.indexOf('point7') != -1){
+						carbox.style.width = width + (oldx -x) + 'px'
+						carbox.style.height = height + (oldx -x) + 'px'
+						carbox.style.left = left - (oldx -x) + 'px'
+						oldx = x
+					}
+					// 左
+					if(point_className.indexOf('point8') != -1){
+						carbox.style.width = width + (oldx -x) + 'px'
+						carbox.style.left = left - (oldx -x) + 'px'
+						oldx = x
+					}
+				}
+			}
+		}
+
+		window.onload = function(){
+			// 初始化裁剪框大小
+			setcatboxsize(500,300)
+			setparentboxheight()
+			setCatboxposition()
+			carboxmove()
+			var img = null
+			var canvas = null
+			// 裁剪
+			document.getElementById('caijian').onclick = function(){
+				document.getElementById('yulanbox').innerHTML = ''
+				var carbox = document.querySelector('.catbox')
+				var width = carbox.clientWidth
+				var height = carbox.clientHeight
+				var x = parseFloat(carbox.style.left)
+				var y = parseFloat(carbox.style.top)
+				catImg('yulanbox',width,height,x,y)
+			}
+
+			//下载
+			document.getElementById('download').onclick = downloadimg
+
+			//上传
+			document.getElementById('upload').onclick = function(){
+				var img = document.getElementById('caijianimg')
+				var canvas = document.getElementById('tcanvas')
+				
+				if(!canvas){
+					return alert("请先裁剪图片")
+				}
+
+				var str = img.src.substr(img.src.lastIndexOf('.'))
+				//cavas 保存图片到本地  js 实现
+				//------------------------------------------------------------------------
+				//1.确定图片的类型  获取到的图片格式 data:image/Png;base64,......
+				var type = str.substr(1);//你想要什么图片格式 就选什么吧
+				var imgdata=canvas.toDataURL(type);
+				console.log(imgdata)
+				alert('自行上传至服务器')
+			}
+
+			//设置输入框input事件
+			setInputcahnge()
+		}
+
+		window.onresize = function(){
+			setparentboxheight()
+			setCatboxposition()
+		}
+
+		// 裁剪图片
+		function catImg(app,width,height,x,y){
+			var app = document.getElementById(app)
+			canvas = document.createElement("canvas")
+			canvas.id = 'tcanvas'
+			canvas.width = width
+			canvas.height = height
+			app.appendChild(canvas)
+			var cxt = canvas.getContext("2d")
+			//创建新的图片对象
+			var img = document.getElementById('caijianimg')
+			cxt.drawImage(img, -1*x, -1*y, img.width, img.height);  
+		}
+
+		function downloadimg(){
+			var img = document.getElementById('caijianimg')
+			var canvas = document.getElementById('tcanvas')
+			 
+			if(!canvas){
+				return alert("请先裁剪图片")
+			}
+
+			var str = img.src.substr(img.src.lastIndexOf('.'))
+			//cavas 保存图片到本地  js 实现
+			//------------------------------------------------------------------------
+			//1.确定图片的类型  获取到的图片格式 data:image/Png;base64,......
+			var type = str.substr(1);//你想要什么图片格式 就选什么吧
+			var imgdata=canvas.toDataURL(type);
+			//2.0 将mime-type改为image/octet-stream,强制让浏览器下载
+			var fixtype=function(type){
+				type=type.toLocaleLowerCase().replace(/jpg/i,'jpeg');
+				var r=type.match(/png|jpeg|bmp|gif/)[0];
+				return 'image/'+r;
+			};
+			imgdata=imgdata.replace(fixtype(type),'image/octet-stream');
+			//3.0 将图片保存到本地
+			var savaFile=function(data,filename)
+			{
+				var save_link=document.createElementNS('http://www.w3.org/1999/xhtml', 'a');
+				save_link.href=data;
+				save_link.download=filename;
+				var event=document.createEvent('MouseEvents');
+				event.initMouseEvent('click',true,false,window,0,0,0,0,0,false,false,false,false,0,null);
+				save_link.dispatchEvent(event);
+			};
+			var filename=''+new Date().getTime()/1000+'.'+type;
+			//我想用当前秒是可以解决重名的问题了 不行你就换成毫秒
+			savaFile(imgdata,filename);
+		}
+		
+		//手动设置 裁剪框宽高
+		function setcatboxsize(width,height){
+			var catbox = document.querySelector('.catbox')
+			document.getElementById('width_input').value = width
+			document.getElementById('height_input').value = height
+			catbox.style.width = width + 'px'
+			catbox.style.height = height + 'px'
+		}
+
+		// 复制给input 坐标数据
+		function setInputcahnge(){
+			document.getElementById('width_input').addEventListener('input',function(){
+				document.querySelector('.catbox').style.width = this.value + 'px'
+			})
+			document.getElementById('height_input').addEventListener('input',function(){
+				document.querySelector('.catbox').style.height = this.value + 'px'
+			})
+		}
+	</script>
+</body>
+</html>

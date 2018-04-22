@@ -5,10 +5,10 @@ window.onload = function () {
 	// The control points which represent the top-left, top-right and bottom
 	// right of the image.
 	var controlPoints = [
-		{ x: 100, y: 100 },
-		{ x: 300, y: 100 },
-		{ x: 300, y: 400 },
-		{ x: 100, y: 400 }
+		{ x: 65, y: 225 },
+		{ x: 369, y: 69 },
+		{ x: 682, y: 637 },
+		{ x: 403, y: 790 }
 	];
 
 	document.querySelectorAll('.inputele').forEach(function (item, index) {
@@ -104,19 +104,17 @@ window.onload = function () {
 			// set clip
 			trianglePath(ctx, dst);
 			ctx.clip();
+			
 
 			// draw image
 			ctx.transform(T[0], T[1], T[2], T[3], T[4], T[5]);
+
 			ctx.drawImage(imgElement, 0, 0);
 
 			ctx.restore();
 
-			if (drawSkeleton) {
-				trianglePath(ctx, dst);
-				ctx.lineWidth = 0;
-				ctx.strokeStyle = 'rgba(255,255,255,0)';
-				ctx.stroke();
-			}
+
+			
 		}
 
 		if (drawSkeleton) {
@@ -208,9 +206,6 @@ window.onload = function () {
 		ctx.lineTo(points[1].x, points[1].y);
 		ctx.lineTo(points[2].x, points[2].y);
 		ctx.closePath();
-		// ctx.lineWidth = 1;
-		// ctx.strokeStyle = 'transparent';
-		// ctx.stroke();
 	}
 
 	function setupDragging() {
@@ -386,14 +381,14 @@ window.onload = function () {
 	}
 
 	//上传图片
-	document.getElementById("upload").onclick = function(){
+	document.getElementById("upload").onclick = function () {
 		var canvas = document.getElementById('downloadimgcanvas')
 
 		if (!canvas) {
 			return alert("请先合成图片")
 		}
 		var type = 'png';//你想要什么图片格式 就选什么吧
-		var imgdata=canvas.toDataURL(type);
+		var imgdata = canvas.toDataURL(type);
 		console.log(imgdata)
 		alert('自行上传至服务器')
 	}

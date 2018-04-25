@@ -2,13 +2,16 @@ window.onload = function () {
 	var maximumTriangleCount = 200;
 	var maxAllowableBadness = 1e-2;
 
+	var img2 = new Image()
+	img2.src = 'img/phone.jpg'
+
 	// The control points which represent the top-left, top-right and bottom
 	// right of the image.
 	var controlPoints = [
-		{ x: 65, y: 225 },
-		{ x: 369, y: 69 },
-		{ x: 682, y: 637 },
-		{ x: 403, y: 790 }
+		{ x: 472, y: 307 },
+		{ x: 722, y: 336 },
+		{ x: 234, y: 870 },
+		{ x: 9, y: 805 }
 	];
 
 	document.querySelectorAll('.inputele').forEach(function (item, index) {
@@ -59,63 +62,65 @@ window.onload = function () {
 		var ctx = canvasElement.getContext('2d');
 		ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-		var projPoints = findQuadProjectiveDepths(controlPoints);
+		// var projPoints = findQuadProjectiveDepths(controlPoints);
 
-		var triangles = [
-			{
-				src: [srcPoints[0], srcPoints[1], srcPoints[2]],
-				dst: [projPoints[0], projPoints[1], projPoints[2]]
-			},
-			{
-				src: [srcPoints[2], srcPoints[3], srcPoints[0]],
-				dst: [projPoints[2], projPoints[3], projPoints[0]]
-			}
-		];
+		// var triangles = [
+		// 	{
+		// 		src: [srcPoints[0], srcPoints[1], srcPoints[2]],
+		// 		dst: [projPoints[0], projPoints[1], projPoints[2]]
+		// 	},
+		// 	{
+		// 		src: [srcPoints[2], srcPoints[3], srcPoints[0]],
+		// 		dst: [projPoints[2], projPoints[3], projPoints[0]]
+		// 	}
+		// ];
 
-		// Keep sub-dividing until we're done
-		var triIdx = 0;
-		while ((triIdx < triangles.length) && (triangles.length < maximumTriangleCount)) {
-			var newTris = subdivideTriangle(triangles[triIdx]);
-			if (newTris.length == 1) {
-				// no subdivision performed
-				triIdx++;
-			} else {
-				// remove original triangle and add new ones
-				triangles.splice(triIdx, 1);
-				triangles = triangles.concat(newTris);
-			}
-		}
+		// // Keep sub-dividing until we're done
+		// var triIdx = 0;
+		// while ((triIdx < triangles.length) && (triangles.length < maximumTriangleCount)) {
+		// 	var newTris = subdivideTriangle(triangles[triIdx]);
+		// 	if (newTris.length == 1) {
+		// 		// no subdivision performed
+		// 		triIdx++;
+		// 	} else {
+		// 		// remove original triangle and add new ones
+		// 		triangles.splice(triIdx, 1);
+		// 		triangles = triangles.concat(newTris);
+		// 	}
+		// }
 
-		// Draw affine-transformed triangles
-		for (var i = 0; i < triangles.length; i++) {
-			var src = triangles[i].src;
-			var dstProj = triangles[i].dst;
+		// // Draw affine-transformed triangles
+		// for (var i = 0; i < triangles.length; i++) {
+		// 	var src = triangles[i].src;
+		// 	var dstProj = triangles[i].dst;
 
-			var dst = [];
-			for (var j = 0; j < dstProj.length; j++) {
-				var p = dstProj[j];
-				dst.push({ x: p.x / p.z, y: p.y / p.z });
-			}
+		// 	var dst = [];
+		// 	for (var j = 0; j < dstProj.length; j++) {
+		// 		var p = dstProj[j];
+		// 		dst.push({ x: p.x / p.z, y: p.y / p.z });
+		// 	}
 
-			var T = affineTransformationFromTriangleCorners(src, dst);
+		// 	var T = affineTransformationFromTriangleCorners(src, dst);
 
-			ctx.save();
+		// 	ctx.save();
 
-			// set clip
-			trianglePath(ctx, dst);
-			ctx.clip();
+		// 	// set clip
+		// 	trianglePath(ctx, dst);
+		// 	ctx.clip();
 			
 
-			// draw image
-			ctx.transform(T[0], T[1], T[2], T[3], T[4], T[5]);
+		// 	// draw image
+		// 	ctx.transform(T[0], T[1], T[2], T[3], T[4], T[5]);
 
-			ctx.drawImage(imgElement, 0, 0);
+		// 	ctx.drawImage(imgElement, 0, 0);
 
-			ctx.restore();
+		// 	ctx.restore();
 
-
-			
-		}
+		
+		
+		
+		// }
+		drawimgX(ctx)
 
 		if (drawSkeleton) {
 			svgElement.style.visibility = 'visible';
@@ -312,6 +317,50 @@ window.onload = function () {
 		var dx = a.x - b.x;
 		var dy = a.y - b.y;
 		return Math.sqrt(dx * dx + dy * dy);
+	}
+
+	function drawimgX(ctx){
+		ctx.save()
+		ctx.clearRect(0, 0, canvasElement.width, canvasElement.width);
+		var w = img2.width
+		var h = img2.height
+
+		var point = controlPoints
+
+		var line1 =Math.sqrt(Math.abs(point[0].x - point[1].x)*Math.abs(point[0].x - point[1].x) + Math.abs(point[0].y - point[1].y)*Math.abs(point[0].y - point[1].y))
+		var line2 =Math.sqrt(Math.abs(point[0].x - point[3].x)*Math.abs(point[0].x - point[3].x) + Math.abs(point[0].y - point[3].y)*Math.abs(point[0].y - point[3].y))
+
+		var nw = line1
+		var nh = line2
+
+		var d1 = point[1].y > point[0].y ? 1 : -1
+		var d2 = point[3].x > point[0].x ? -1 : 1
+
+		var xd = d1 * Math.asin(Math.abs(point[0].y-point[1].y)/line1)/(Math.PI/180)
+		var yd = d2 * (90 - (Math.asin(Math.abs(point[0].y-point[3].y)/line2)/(Math.PI/180)))
+		
+
+		var deg = Math.PI/180;
+		var x = point[0].x
+		var y = point[0].y
+
+		var yh1 = Math.sin(xd*deg)*x
+		var xh1 = x - Math.cos(xd*deg)*x
+
+		var yh2 = y - Math.cos(yd*deg)*y
+		var xh2 = Math.sin(yd*deg)*y
+
+		
+		var xh = xh1 + xh2
+		var yh = yh1 - yh2
+
+
+			
+		ctx.transform(Math.cos(xd*deg),Math.sin(xd*deg),-Math.sin(yd*deg),Math.cos(yd*deg),xh,-yh)
+
+		ctx.drawImage(img2,x,y,nw,nh)
+
+		ctx.restore();
 	}
 
 	// 给input赋值

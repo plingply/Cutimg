@@ -4,275 +4,75 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Document</title>
-	<script src="js/html2canvas.js"></script>
+	<title>canvas</title>
 	<style>
-	.box{
-		overflow: hidden;
-	}
-	.box>*{
-		position: absolute;
-		top: 0;
-		left: 0;
-	}
-	#img2{
-		visibility: hidden;
-	}
 	#canvas{
-		position: relative;
-		top: 0;
-		left: 0;
-	}
-	.flex{
-		display: flex;
-	}
-	.flex > div{
-		width: 50%;
-	}
-	#svgelement{
-		cursor: move;
-	}
-	body{
-		margin: 0;
-	}
-	.box  .gnbtn{
-		width: 50px;
-		height: 50px;
-		background-color: rgba(255,0,0,.3);
-		border-radius: 50%;
-		position: absolute;
-	}
-	.box  .gnbtn:hover{
-		border: 1px solid rgba(255,0,0,.8);
+		border: 1px solid red;
 	}
 	</style>
 </head>
 <body>
-	<div class="flex">
-		<div class="box" id="div">
-			<canvas id="canvas" width="1200" height="1000"></canvas>
-			<img id="bjimg" src="img/zp.png" alt>
-			<img id="img2" src="img/phone.jpg" alt>
-			<div id="svgelement"></div>
-			<div class="gnbtn righttop"></div>
-			<div class="gnbtn leftbottom"></div>
-		</div>
-		<div class="outbox" id="outbox">
-			
-		</div>
-	</div>
-
-	<button id="btn" type="button">生成图片</button>
-	<!-- <button id="download" type="button">下载图片</button> -->
-
+	<canvas id="canvas" width="1000" height="700"></canvas>
 	<script>
-	window.onload = function(){
-		var canmove = false
-		var canmove_d = false
-		var div = document.getElementById('div')
-		var bjimg = document.getElementById('bjimg')
-		var canvas = document.getElementById('canvas')
-		var svg = document.getElementById('svgelement')
-		var img2 = document.getElementById('img2')
-		var righttop = document.querySelector('.righttop')
-		var leftbottom = document.querySelector('.leftbottom')
-		var outbox = document.getElementById("outbox")
-		
+		window.onload = function(){
+			var canvas = document.getElementById("canvas")
+			var ctx = canvas.getContext('2d')
+			var x = 400
+			var y = 100
+			var angle = Math.PI/8
 
-		var oldx = 0;
-		var oldy = 0;
+			ctx.beginPath();
+			ctx.arc(x,y,5,0,360,false);
+			ctx.fillStyle="red";//填充颜色,默认是黑色
+			ctx.fill();//画实心圆
+			ctx.closePath();
 
-		canvas.width = bjimg.width*2
-		canvas.height = bjimg.height*2
-		div.style.width = bjimg.width+'px'
-		div.style.height = bjimg.height+'px'
-		svg.style.width = bjimg.width + 'px'
-		svg.style.height = bjimg.height + 'px'
+			ctx.beginPath();
+			ctx.arc(y,x,5,0,360,false);
+			ctx.fillStyle="red";//填充颜色,默认是黑色
+			ctx.fill();//画实心圆
+			ctx.closePath();
 
-		
+			ctx.beginPath();
+			ctx.arc(x,0,y,0,360,false);
+			ctx.fillStyle="rgba(0,0,0,.1)";//填充颜色,默认是黑色
+			ctx.fill();//画实心圆
+			ctx.closePath();
 
-		var point = [
-			{x:82,y:218},
-			{x:370,y:65},
-			{x:396,y:785}
-		]
+			var img = new Image()
+			img.src = 'img/phone.jpg'
+			img.onload = function(){
+				var w = img.width
+				var h = img.height
+				// ctx.rotate(angle)
+				// var rx = x * Math.cos(-angle) - y * Math.sin(-angle);
+				// var ry = y * Math.cos(-angle) + x * Math.sin(-angle);
+				// ctx.transform(1,30,0,1,0,0)
+				var deg = Math.PI/180;
+				var xd = -20
+				var yd = 10
 
+				var yh1 = Math.sin(xd*deg)*x
+				var xh1 = x - Math.cos(xd*deg)*x
 
-		righttop.style.left = point[1].x - 25 + 'px'
-		righttop.style.top = point[1].y - 25 + 'px'
+				
+				var yh2 = y - Math.cos(yd*deg)*y
+				var xh2 = Math.sin(yd*deg)*y
 
-		leftbottom.style.left = point[2].x - 25 + 'px'
-		leftbottom.style.top = point[2].y - 25 + 'px'
+				console.log('2',xh2,yh2)
 
-		var dx = 0;
-		var dy = 0;
+				var xh = xh1 + xh2
+				var yh = yh1 - yh2
 
-		var ctx = canvas.getContext('2d')
+				console.log(xh,yh)
+				
+				ctx.transform(Math.cos(xd*deg),Math.sin(xd*deg),-Math.sin(yd*deg),Math.cos(yd*deg),xh,-yh)
 
-		drawimgX(ctx,dx,dy)
-		
-		
+				// ctx.transform(Math.cos(7*deg),Math.sin(7*deg),-Math.sin(ydeg*deg),Math.cos(7*deg),0,0)
 
-		svg.onmousedown = function(e){
-			canmove = true
-			oldx = e.pageX
-			oldy = e.pageY
+				ctx.drawImage(img,x,y,w,h)
+			}
 		}
-		svg.onmousemove = function(e){
-			if(!canmove)return
-			var x1 = e.pageX
-			var y1 = e.pageY
-			var x = x1 - oldx
-			var y = y1 - oldy
-			var style = document.defaultView.getComputedStyle(canvas)
-			var left = parseFloat(style.left)
-			var top = parseFloat(style.top)
-			canvas.style.left = left + x + 'px'
-			canvas.style.top = top + y + 'px'
-
-			oldx = x1
-			oldy = y1
-		}
-
-		svg.onmouseup = function(){
-			canmove = false
-		}
-
-		righttop.onmousemove = function(e){
-			if(!canmove_d)return
-			var x1 = e.pageX
-			var y1 = e.pageY
-			var x = x1 - oldx
-			var y = y1 - oldy
-			var style = document.defaultView.getComputedStyle(righttop)
-			var left = parseFloat(style.left)
-			var top = parseFloat(style.top)
-			righttop.style.left = left + x + 'px'
-			righttop.style.top = top + y + 'px'
-
-			oldx = x1
-			oldy = y1
-
-			point[1].x = x1
-			point[1].y = y1
-
-			drawimgX(ctx,dx,dy)
-
-		}
-		righttop.onmousedown = function(e){
-			canmove_d = true
-			oldx = e.pageX
-			oldy = e.pageY 
-		}
-		righttop.onmouseup = function(){
-			canmove_d = false
-		}
-
-		leftbottom.onmousemove = function(e){
-			if(!canmove_d)return
-			var x1 = e.pageX
-			var y1 = e.pageY
-			var x = x1 - oldx
-			var y = y1 - oldy
-			var style = document.defaultView.getComputedStyle(leftbottom)
-			var left = parseFloat(style.left)
-			var top = parseFloat(style.top)
-			leftbottom.style.left = left + x + 'px'
-			leftbottom.style.top = top + y + 'px'
-
-			oldx = x1
-			oldy = y1
-
-			point[2].x = x1
-			point[2].y = y1
-
-			drawimgX(ctx,dx,dy)
-
-		}
-		leftbottom.onmousedown = function(e){
-			canmove_d = true
-			oldx = e.pageX
-			oldy = e.pageY 
-		}
-		leftbottom.onmouseup = function(){
-			canmove_d = false
-		}
-
-		function drawimgX(ctx,x,y){
-			ctx.save()
-			ctx.clearRect(0, 0, canvas.width, canvas.width);
-			var w = img2.width
-			var h = img2.height
-			var line1 =Math.sqrt(Math.abs(point[0].x - point[1].x)*Math.abs(point[0].x - point[1].x) + Math.abs(point[0].y - point[1].y)*Math.abs(point[0].y - point[1].y))
-			var line2 =Math.sqrt(Math.abs(point[0].x - point[2].x)*Math.abs(point[0].x - point[2].x) + Math.abs(point[0].y - point[2].y)*Math.abs(point[0].y - point[2].y))
-
-			var nw = line1
-			var nh = line2
-
-			var xdeg = Math.asin(Math.abs(point[0].y-point[1].y)/line1)/(Math.PI/180)
-			var ydeg = Math.asin(Math.abs(point[0].x-point[2].x)/line2)/(Math.PI/180)
-
-			
-			var x1 = point[0].y > point[1].y?(-1*xdeg/50):(xdeg/50)
-			var y1 = point[0].x > point[2].x?(-1*ydeg/50):(ydeg/50)
-
-
-
-			ctx.transform(1,x1,y1,1,x1*w/2,y1*h/10);
-			ctx.drawImage(img2,point[0].x,point[0].y,nw,nh)
-			ctx.restore();
-		}
-
-		//生成图片
-		document.getElementById("btn").onclick = function(){
-			righttop.style.display = 'none'
-			leftbottom.style.display = 'none'
-			outbox.innerHTML = ''
-			html2canvas(div).then(canvas => {
-				outbox.appendChild(canvas)
-				righttop.style.display = 'block'
-				leftbottom.style.display = 'block'
-			});
-		}
-
-		// 下载图片
-		// document.getElementById('download').onclick = function () {
-		// 	var canvas = outbox.querySelector('canvas')
-
-		// 	if (!canvas) {
-		// 		return alert("请先合成图片")
-		// 	}
-
-		// 	//cavas 保存图片到本地  js 实现
-		// 	//------------------------------------------------------------------------
-		// 	//1.确定图片的类型  获取到的图片格式 data:image/Png;base64,......
-		// 	var type = 'png';//你想要什么图片格式 就选什么吧
-		// 	var imgdata = canvas.toDataURL(type);
-		// 	//2.0 将mime-type改为image/octet-stream,强制让浏览器下载
-		// 	var fixtype = function (type) {
-		// 		type = type.toLocaleLowerCase().replace(/jpg/i, 'jpeg');
-		// 		var r = type.match(/png|jpeg|bmp|gif/)[0];
-		// 		return 'image/' + r;
-		// 	};
-		// 	imgdata = imgdata.replace(fixtype(type), 'image/octet-stream');
-		// 	//3.0 将图片保存到本地
-		// 	var savaFile = function (data, filename) {
-		// 		var save_link = document.createElementNS('http://www.w3.org/1999/xhtml', 'a');
-		// 		save_link.href = data;
-		// 		save_link.download = filename;
-		// 		var event = document.createEvent('MouseEvents');
-		// 		event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-		// 		save_link.dispatchEvent(event);
-		// 	};
-		// 	var filename = '' + new Date().getTime() / 1000 + '.' + type;
-		// 	savaFile(imgdata, filename);
-		// }
-
-		function setleftbottom(x,y){
-			leftbottom.style.left = x + 'px'
-			leftbottom.style.top = y + 'px'
-		}
-	}
 	</script>
 </body>
 </html>

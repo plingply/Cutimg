@@ -1,34 +1,4 @@
-#container {
-  position: relative;
-  width: 500px;
-  height: 500px;
-  margin: 0 auto;
-}
-#container * {
-  position: absolute;
-}
-#screen {
-  visibility: hidden;
-}
-circle.control-point {
-  fill: red;
-  fill-opacity: 0.25;
-}
-circle.control-point:hover {
-  stroke: yellow;
-  stroke-width: 2px;
-}
-.pointbox {
-  text-align: center;
-  padding-top: 20px;
-}
-.pointbox input {
-  height: 24px;
-  width: 100px;
-  margin-right: 20px;
-}
-.imgyulan {
-  width: 100%;
+.imgparentbox,.imgyulan{display:flex}#container{position:relative;width:500px;height:500px;margin:0 auto}#container *{position:absolute}#screen{visibility:hidden}circle.control-point{fill:red;fill-opacity:.25}circle.control-point:hover{stroke:#ff0;stroke-width:2px}.pointbox{text-align:center;padding-top:20px}.pointbox input{height:24px;width:100px;margin-right:20px}.imgyulan{width:100%;justify-content:center}.imgparentbox>div{flex:1}idth: 100%;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
